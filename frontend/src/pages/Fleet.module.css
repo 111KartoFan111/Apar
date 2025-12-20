@@ -1,0 +1,82 @@
+.actionGroup {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.actionsBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.quickAdd {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.quickAddForm {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  align-items: end;
+}
+
+.vehicleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-5);
+}
+
+.vehicleCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  color: var(--color-text-secondary);
+  transition: transform 0.2s;
+}
+
+.vehicleCard:hover {
+  transform: translateY(-2px);
+}
+
+.vehicleHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
+}
+
+.vehicleTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.3px;
+}
+
+.statusPill {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 600;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.meta {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}

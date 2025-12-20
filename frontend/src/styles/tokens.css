@@ -1,0 +1,40 @@
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-elevated: #f8fafc;
+  --color-card: #ffffff;
+  --color-glass: rgba(255, 255, 255, 0.75);
+
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+
+  --color-brand: #000000;
+  --color-brand-muted: #475569;
+
+  --color-success: #16a34a;
+  --color-warning: #f97316;
+  --color-danger: #ef4444;
+  --color-info: #0ea5e9;
+
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.1);
+  --shadow-lg: 0 12px 24px rgba(15, 23, 42, 0.12);
+
+  --blur-sm: 6px;
+  --blur-md: 14px;
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+}

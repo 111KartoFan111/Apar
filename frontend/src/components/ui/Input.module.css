@@ -1,0 +1,43 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.field {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  background: #ffffff;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  min-height: 42px;
+  box-sizing: border-box;
+}
+
+.field:hover {
+  border-color: rgba(15, 23, 42, 0.24);
+}
+
+.field:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.field::placeholder {
+  color: var(--color-text-muted);
+}
+
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+}
