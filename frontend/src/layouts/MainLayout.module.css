@@ -46,16 +46,41 @@
   transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
+.navIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.06);
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.navIcon svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+}
+
 .navItem:hover {
   background: rgba(15, 23, 42, 0.06);
   color: var(--color-text-primary);
   transform: translateX(2px);
 }
 
+.navItem:hover .navIcon {
+  background: rgba(15, 23, 42, 0.12);
+}
+
 .active {
   background: rgba(15, 23, 42, 0.08);
   color: var(--color-text-primary);
   border: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+.active .navIcon {
+  background: rgba(15, 23, 42, 0.16);
 }
 
 .content {

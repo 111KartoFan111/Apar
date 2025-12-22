@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Table } from "../components/ui/Table";
+import { StatusBadge } from "../components/ui/StatusBadge";
 import styles from "./Dashboard.module.css";
 
 export default function DashboardPage() {
@@ -87,7 +88,7 @@ export default function DashboardPage() {
                 <div style={{ fontWeight: 500, marginBottom: "4px" }}>{a.description || "Maintenance"}</div>
                 <div style={{ color: "var(--color-text-muted)", fontSize: "12px" }}>{a.due_date}</div>
               </div>
-              <span className={styles.badge} style={{ background: "#fef3c7", borderColor: "#fbbf24", color: "#92400e" }}>Alert</span>
+              <StatusBadge status="Alert" />
             </div>
           ))}
         </Card>
@@ -99,7 +100,7 @@ export default function DashboardPage() {
                   <div style={{ fontWeight: 600, marginBottom: "4px" }}>{item.title}</div>
                   <div style={{ color: "var(--color-text-muted)", fontSize: "12px" }}>{item.type} · {item.date}</div>
                 </div>
-                <span className={styles.badge}>{item.status || "OK"}</span>
+                <StatusBadge status={item.status || "OK"} />
               </div>
             ))}
           </div>
@@ -116,7 +117,7 @@ export default function DashboardPage() {
         <Card title="Операционная активность">
           <Table
             headers={["Тип", "О чем", "Дата", "Статус"]}
-            rows={recent.map((r) => [r.type, r.title, r.date, r.status || "OK"])}
+            rows={recent.map((r) => [r.type, r.title, r.date, <StatusBadge status={r.status || "OK"} />])}
             zebra
           />
         </Card>

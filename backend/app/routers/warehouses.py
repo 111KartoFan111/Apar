@@ -34,6 +34,20 @@ def list_stocks(db: Session = Depends(get_db), _: models.User = Depends(get_curr
     return db.query(models.PartStock).all()
 
 
+@router.get("/movements", response_model=list[schemas.StockMovementOut])
+def list_movements(
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(get_current_user),
+):
+    return (
+        db.query(models.StockMovement)
+        .order_by(models.StockMovement.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+
 @router.post("/parts", response_model=schemas.PartOut)
 def create_part(part_in: schemas.PartCreate, db: Session = Depends(get_db), _: models.User = Depends(get_current_user)):
     existing = db.query(models.Part).filter(models.Part.sku == part_in.sku).first()

@@ -14,6 +14,7 @@ class Tire(Base):
     status = Column(String(50), default="in_stock")
 
     assignments = relationship("TireAssignment", back_populates="tire", cascade="all, delete-orphan")
+    services = relationship("TireService", back_populates="tire", cascade="all, delete-orphan")
 
 
 class TireAssignment(Base):
@@ -29,3 +30,18 @@ class TireAssignment(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     tire = relationship("Tire", back_populates="assignments")
+
+
+class TireService(Base):
+    __tablename__ = "tire_services"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tire_id = Column(Integer, ForeignKey("tires.id", ondelete="CASCADE"), nullable=False)
+    service_type = Column(String(50), nullable=False)
+    service_date = Column(Date, nullable=True)
+    mileage = Column(Float, nullable=True)
+    tread_depth = Column(Float, nullable=True)
+    notes = Column(String(255), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    tire = relationship("Tire", back_populates="services")

@@ -7,5 +7,5 @@ from .inspection import InspectionTemplate, InspectionResult
 from .warehouse import Warehouse, Part, StockMovement, PartStock
 from .orders import PartOrder, PartOrderItem
 from .fines import Fine
-from .tires import Tire, TireAssignment
+from .tires import Tire, TireAssignment, TireService
 from .reports import ReportTemplate

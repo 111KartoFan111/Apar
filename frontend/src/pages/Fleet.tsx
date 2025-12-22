@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Input } from "../components/ui/Input";
+import { StatusBadge } from "../components/ui/StatusBadge";
 import { SectionHeader } from "../components/SectionHeader";
 import styles from "./Fleet.module.css";
 
@@ -83,7 +84,7 @@ export default function FleetPage() {
                     <div className={styles.vehicleTitle}>{v.plate_number}</div>
                     <div className={styles.meta}>{v.model}</div>
                   </div>
-                  <span className={styles.statusPill}>{v.status}</span>
+                  <StatusBadge status={v.status} />
                 </div>
                 <div className={styles.meta}>Пробег: {v.mileage}</div>
                 <div className={styles.meta}>Топливо: {v.fuel_type}</div>

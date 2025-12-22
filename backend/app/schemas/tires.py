@@ -10,6 +10,14 @@ class TireCreate(BaseModel):
     status: str = "in_stock"
 
 
+class TireUpdate(BaseModel):
+    serial: str | None = None
+    brand: str | None = None
+    tread_depth: float | None = None
+    mileage: float | None = None
+    status: str | None = None
+
+
 class TireOut(TireCreate):
     id: int
 
@@ -27,6 +35,22 @@ class TireAssignmentCreate(BaseModel):
 
 
 class TireAssignmentOut(TireAssignmentCreate):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class TireServiceCreate(BaseModel):
+    tire_id: int
+    service_type: str
+    service_date: date | None = None
+    mileage: float | None = None
+    tread_depth: float | None = None
+    notes: str | None = None
+
+
+class TireServiceOut(TireServiceCreate):
     id: int
 
     class Config:

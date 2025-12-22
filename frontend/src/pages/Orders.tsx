@@ -6,6 +6,7 @@ import { SectionHeader } from "../components/SectionHeader";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
+import { StatusBadge } from "../components/ui/StatusBadge";
 
 export default function OrdersPage() {
   const { t } = useTranslation();
@@ -31,10 +32,10 @@ export default function OrdersPage() {
             value={form.status}
             onChange={(e) => setForm({ ...form, status: e.target.value })}
           >
-            <option value="draft">Draft</option>
-            <option value="submitted">Submitted</option>
-            <option value="approved">Approved</option>
-            <option value="received">Received</option>
+            <option value="draft">{t("statusLabels.draft")}</option>
+            <option value="submitted">{t("statusLabels.submitted")}</option>
+            <option value="approved">{t("statusLabels.approved")}</option>
+            <option value="received">{t("statusLabels.received")}</option>
           </select>
           <Button onClick={() => create.mutate()}>{t("add")}</Button>
         </div>
@@ -45,7 +46,9 @@ export default function OrdersPage() {
             <li key={o.id} style={{ padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "space-between" }}>
               <div>
                 <div style={{ fontWeight: 700 }}>{o.supplier || "N/A"}</div>
-                <div style={{ color: "var(--color-text-muted)", fontSize: "13px" }}>{o.status}</div>
+                <div style={{ marginTop: "6px" }}>
+                  <StatusBadge status={o.status} />
+                </div>
               </div>
               <div style={{ color: "var(--color-text-secondary)" }}>Cost: {o.total_cost}</div>
             </li>

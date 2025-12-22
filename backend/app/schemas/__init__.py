@@ -19,6 +19,14 @@ from .warehouses import (
     PartImportResult,
 )
 from .orders import PartOrderCreate, PartOrderOut
-from .fines import FineCreate, FineOut
-from .tires import TireCreate, TireOut, TireAssignmentCreate, TireAssignmentOut
+from .fines import FineCreate, FineOut, FineUpdate
+from .tires import (
+    TireCreate,
+    TireOut,
+    TireUpdate,
+    TireAssignmentCreate,
+    TireAssignmentOut,
+    TireServiceCreate,
+    TireServiceOut,
+)
 from .reports import ReportTemplateCreate, ReportTemplateOut, ReportRunRequest, ReportRunResult

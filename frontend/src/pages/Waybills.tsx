@@ -43,6 +43,15 @@ export default function WaybillsPage() {
     setForm({ ...form, purpose: res.data.purpose, route_text: res.data.route_summary });
   };
 
+  const openExample = async () => {
+    const res = await api.get("/waybills/example", { responseType: "text", headers: { Accept: "text/html" } });
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(res.data);
+      printWindow.document.close();
+    }
+  };
+
   const printWaybill = async (id: number) => {
     const res = await api.get(`/waybills/${id}/print`, { responseType: "text", headers: { Accept: "text/html" } });
     const printWindow = window.open("", "_blank");
@@ -56,8 +65,13 @@ export default function WaybillsPage() {
     <div className="page">
       <SectionHeader
         title={t("waybills")}
-        subtitle="Создание и печать путевых листов, улучшение текста через ИИ"
-        actions={<Button onClick={improveText}>{t("aiImproveText")}</Button>}
+        subtitle={t("waybillsSubtitle")}
+        actions={
+          <>
+            <Button variant="secondary" onClick={openExample}>{t("exampleWaybill")}</Button>
+            <Button onClick={improveText}>{t("aiImproveText")}</Button>
+          </>
+        }
       />
       <Card>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
@@ -65,7 +79,7 @@ export default function WaybillsPage() {
             value={form.vehicle_id}
             onChange={(e) => setForm({ ...form, vehicle_id: e.target.value })}
           >
-            <option value="">Vehicle</option>
+            <option value="">{t("vehicle")}</option>
             {vehicles.data?.map((v: any) => (
               <option key={v.id} value={v.id}>{v.plate_number}</option>
             ))}
@@ -75,20 +89,20 @@ export default function WaybillsPage() {
           <Textarea placeholder={t("route")} value={form.route_text} onChange={(e) => setForm({ ...form, route_text: e.target.value })} />
           <Input type="datetime-local" value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} />
           <Input type="datetime-local" value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} />
-          <Input placeholder="Start odometer" value={form.start_odometer} onChange={(e) => setForm({ ...form, start_odometer: e.target.value })} />
-          <Input placeholder="End odometer" value={form.end_odometer} onChange={(e) => setForm({ ...form, end_odometer: e.target.value })} />
+          <Input placeholder={t("startOdometer")} value={form.start_odometer} onChange={(e) => setForm({ ...form, start_odometer: e.target.value })} />
+          <Input placeholder={t("endOdometer")} value={form.end_odometer} onChange={(e) => setForm({ ...form, end_odometer: e.target.value })} />
         </div>
         <Button style={{ marginTop: "12px" }} onClick={() => create.mutate()}>{t("add")}</Button>
       </Card>
       <Card>
         <Table
-          headers={[t("driver"), "Vehicle", t("purpose"), t("route"), "Print"]}
+          headers={[t("driver"), t("vehicle"), t("purpose"), t("route"), t("print")]}
           rows={(waybills.data || []).map((w: any) => [
             w.driver,
             w.vehicle_id,
             w.purpose,
             w.route_text,
-            <Button key={w.id} variant="ghost" onClick={() => printWaybill(w.id)}>Печать</Button>
+            <Button key={w.id} variant="ghost" onClick={() => printWaybill(w.id)}>{t("print")}</Button>
           ])}
           zebra
         />

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { SectionHeader } from "../components/SectionHeader";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
+import { StatusBadge } from "../components/ui/StatusBadge";
 
 export default function VehicleDetailPage() {
   const { id } = useParams();
@@ -39,7 +40,7 @@ export default function VehicleDetailPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", fontSize: "15px" }}>
           <div>
             <div style={{ color: "var(--color-text-muted)", fontSize: "13px", marginBottom: "4px" }}>Status</div>
-            <div style={{ fontWeight: 600 }}>{vehicle.data.status}</div>
+            <StatusBadge status={vehicle.data.status} />
           </div>
           <div>
             <div style={{ color: "var(--color-text-muted)", fontSize: "13px", marginBottom: "4px" }}>Mileage</div>

@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -45,6 +46,7 @@ class StockMovementOut(BaseModel):
     quantity: float
     movement_type: str
     reference: str | None = None
+    created_at: datetime | None = None
 
     class Config:
         orm_mode = True

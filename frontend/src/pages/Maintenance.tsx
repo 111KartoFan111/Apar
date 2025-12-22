@@ -6,6 +6,7 @@ import { SectionHeader } from "../components/SectionHeader";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
+import { StatusBadge } from "../components/ui/StatusBadge";
 
 export default function MaintenancePage() {
   const { t } = useTranslation();
@@ -59,7 +60,7 @@ export default function MaintenancePage() {
                 <div style={{ fontWeight: 600, fontSize: "16px", marginBottom: "4px" }}>{s.description}</div>
                 <div style={{ color: "var(--color-text-muted)", fontSize: "13px" }}>Vehicle: {s.vehicle_id}</div>
               </div>
-              <span style={{ padding: "6px 12px", borderRadius: "6px", background: "#fef3c7", border: "1px solid #fbbf24", fontSize: "12px", fontWeight: 600, color: "#92400e" }}>{s.status}</span>
+              <StatusBadge status={s.status} />
             </div>
             <div style={{ color: "var(--color-text-secondary)", fontSize: "14px" }}>Due: {s.due_date || "-"}</div>
           </Card>

@@ -87,3 +87,57 @@ def print_waybill(waybill_id: int, db: Session = Depends(get_db), _: models.User
     </html>
     """
     return HTMLResponse(content=html)
+
+
+@router.get("/example", response_class=HTMLResponse)
+def example_waybill(_: models.User = Depends(get_current_user)):
+    html = """
+    <!doctype html>
+    <html lang="ru">
+    <head>
+      <meta charset="utf-8"/>
+      <title>Пример путевого листа</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 24px; color: #0f172a; }
+        h1 { font-size: 20px; margin: 0 0 12px; text-align: center; }
+        .meta { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .block { border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; margin-bottom: 12px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 6px; gap: 16px; }
+        .label { color: #64748b; width: 180px; flex-shrink: 0; }
+        .value { flex: 1; }
+        .sign { margin-top: 16px; padding-top: 12px; border-top: 1px dashed #94a3b8; height: 72px; }
+        .footer { margin-top: 16px; font-size: 12px; color: #64748b; }
+      </style>
+    </head>
+    <body>
+      <h1>Путевой лист (пример)</h1>
+      <div class="meta">
+        <div>Организация: Apar Logistics</div>
+        <div>№ 000245 от 22.12.2025</div>
+      </div>
+      <div class="block">
+        <div class="row"><span class="label">Транспорт:</span><span class="value">KZ-001 · Mercedes Sprinter</span></div>
+        <div class="row"><span class="label">Водитель:</span><span class="value">Али Болат</span></div>
+        <div class="row"><span class="label">Цель:</span><span class="value">Доставка грузов по маршруту</span></div>
+        <div class="row"><span class="label">Маршрут:</span><span class="value">Склад → Абая → Достык → Склад</span></div>
+        <div class="row"><span class="label">Начало:</span><span class="value">22.12.2025 08:30</span></div>
+        <div class="row"><span class="label">Окончание:</span><span class="value">22.12.2025 13:10</span></div>
+        <div class="row"><span class="label">Одометр старт:</span><span class="value">120 000 км</span></div>
+        <div class="row"><span class="label">Одометр конец:</span><span class="value">120 260 км</span></div>
+        <div class="row"><span class="label">Примечание:</span><span class="value">Без замечаний</span></div>
+      </div>
+      <div class="block">
+        <div class="sign">
+          <strong>Подпись при отбытии:</strong>
+          <div style="margin-top:24px;border-top:1px solid #000;width:240px;"></div>
+        </div>
+        <div class="sign">
+          <strong>Подпись при прибытии:</strong>
+          <div style="margin-top:24px;border-top:1px solid #000;width:240px;"></div>
+        </div>
+      </div>
+      <div class="footer">Данный документ является демонстрационным примером.</div>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html)
