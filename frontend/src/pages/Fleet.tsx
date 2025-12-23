@@ -7,6 +7,7 @@ import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Input } from "../components/ui/Input";
 import { StatusBadge } from "../components/ui/StatusBadge";
+import { Modal } from "../components/ui/Modal";
 import { SectionHeader } from "../components/SectionHeader";
 import styles from "./Fleet.module.css";
 
@@ -16,6 +17,7 @@ export default function FleetPage() {
   const vehicles = useQuery({ queryKey: ["vehicles"], queryFn: async () => (await api.get("/vehicles")).data });
   const [plate, setPlate] = useState("");
   const [model, setModel] = useState("");
+  const [isAddOpen, setIsAddOpen] = useState(false);
 
   const create = useMutation({
     mutationFn: async () => api.post("/vehicles", { plate_number: plate, model }),
@@ -23,6 +25,7 @@ export default function FleetPage() {
       qc.invalidateQueries(["vehicles"]);
       setPlate("");
       setModel("");
+      setIsAddOpen(false);
     }
   });
 
@@ -50,6 +53,7 @@ export default function FleetPage() {
         subtitle="Список ТС, быстрый ввод и импорт/экспорт CSV"
         actions={
           <div className={styles.actionGroup}>
+            <Button variant="secondary" onClick={() => setIsAddOpen(true)}>{t("openAddVehicle")}</Button>
             <Button variant="secondary" onClick={exportCsv}>{t("exportCsv")}</Button>
             <label>
               <input
@@ -67,14 +71,6 @@ export default function FleetPage() {
       />
 
       <div className={styles.wrapper}>
-        <Card title="Быстрое добавление ТС">
-          <div className={styles.quickAddForm}>
-            <Input label="Plate" value={plate} onChange={(e) => setPlate(e.target.value)} />
-            <Input label="Model" value={model} onChange={(e) => setModel(e.target.value)} />
-            <Button onClick={() => create.mutate()}>{t("add")}</Button>
-          </div>
-        </Card>
-
         <div className={styles.vehicleGrid}>
           {vehicles.data?.map((v: any) => (
             <Link to={`/fleet/${v.id}`} key={v.id}>
@@ -93,6 +89,17 @@ export default function FleetPage() {
           ))}
         </div>
       </div>
+
+      <Modal open={isAddOpen} title={t("addVehicle")} onClose={() => setIsAddOpen(false)}>
+        <div className={styles.quickAddForm}>
+          <Input label={t("plate")} value={plate} onChange={(e) => setPlate(e.target.value)} />
+          <Input label={t("model")} value={model} onChange={(e) => setModel(e.target.value)} />
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+            <Button variant="ghost" onClick={() => setIsAddOpen(false)}>{t("cancel")}</Button>
+            <Button onClick={() => create.mutate()}>{t("add")}</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

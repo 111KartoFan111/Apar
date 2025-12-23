@@ -7,6 +7,7 @@ import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Input, Textarea } from "../components/ui/Input";
 import { Table } from "../components/ui/Table";
+import { Modal } from "../components/ui/Modal";
 
 export default function WaybillsPage() {
   const { t } = useTranslation();
@@ -23,6 +24,7 @@ export default function WaybillsPage() {
     start_odometer: "",
     end_odometer: ""
   });
+  const [isAddOpen, setIsAddOpen] = useState(false);
 
   const create = useMutation({
     mutationFn: async () =>
@@ -35,6 +37,7 @@ export default function WaybillsPage() {
     onSuccess: () => {
       qc.invalidateQueries(["waybills"]);
       setForm({ vehicle_id: "", driver: "", purpose: "", route_text: "", start_time: "", end_time: "", start_odometer: "", end_odometer: "" });
+      setIsAddOpen(false);
     }
   });
 
@@ -68,12 +71,27 @@ export default function WaybillsPage() {
         subtitle={t("waybillsSubtitle")}
         actions={
           <>
+            <Button variant="secondary" onClick={() => setIsAddOpen(true)}>{t("openAddWaybill")}</Button>
             <Button variant="secondary" onClick={openExample}>{t("exampleWaybill")}</Button>
             <Button onClick={improveText}>{t("aiImproveText")}</Button>
           </>
         }
       />
       <Card>
+        <Table
+          headers={[t("driver"), t("vehicle"), t("purpose"), t("route"), t("print")]}
+          rows={(waybills.data || []).map((w: any) => [
+            w.driver,
+            w.vehicle_id,
+            w.purpose,
+            w.route_text,
+            <Button key={w.id} variant="ghost" onClick={() => printWaybill(w.id)}>{t("print")}</Button>
+          ])}
+          zebra
+        />
+      </Card>
+
+      <Modal open={isAddOpen} title={t("addWaybill")} onClose={() => setIsAddOpen(false)}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
           <select
             value={form.vehicle_id}
@@ -91,22 +109,12 @@ export default function WaybillsPage() {
           <Input type="datetime-local" value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} />
           <Input placeholder={t("startOdometer")} value={form.start_odometer} onChange={(e) => setForm({ ...form, start_odometer: e.target.value })} />
           <Input placeholder={t("endOdometer")} value={form.end_odometer} onChange={(e) => setForm({ ...form, end_odometer: e.target.value })} />
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+            <Button variant="ghost" onClick={() => setIsAddOpen(false)}>{t("cancel")}</Button>
+            <Button onClick={() => create.mutate()}>{t("add")}</Button>
+          </div>
         </div>
-        <Button style={{ marginTop: "12px" }} onClick={() => create.mutate()}>{t("add")}</Button>
-      </Card>
-      <Card>
-        <Table
-          headers={[t("driver"), t("vehicle"), t("purpose"), t("route"), t("print")]}
-          rows={(waybills.data || []).map((w: any) => [
-            w.driver,
-            w.vehicle_id,
-            w.purpose,
-            w.route_text,
-            <Button key={w.id} variant="ghost" onClick={() => printWaybill(w.id)}>{t("print")}</Button>
-          ])}
-          zebra
-        />
-      </Card>
+      </Modal>
     </div>
   );
 }

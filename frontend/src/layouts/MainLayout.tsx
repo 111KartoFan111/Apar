@@ -90,6 +90,7 @@ const navIcons = {
   )
 };
 
+
 const navItems = [
   { to: "/dashboard", labelKey: "dashboard", icon: navIcons.dashboard },
   { to: "/fleet", labelKey: "fleet", icon: navIcons.fleet },

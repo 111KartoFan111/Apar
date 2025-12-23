@@ -7,6 +7,7 @@ import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Table } from "../components/ui/Table";
+import { Modal } from "../components/ui/Modal";
 
 export default function FuelPage() {
   const { t } = useTranslation();
@@ -21,12 +22,14 @@ export default function FuelPage() {
     odometer: "",
     station: ""
   });
+  const [isAddOpen, setIsAddOpen] = useState(false);
 
   const create = useMutation({
     mutationFn: async () => api.post(`/vehicles/${form.vehicle_id}/fuel`, { ...form, liters: Number(form.liters), price: Number(form.price), odometer: Number(form.odometer) }),
     onSuccess: () => {
       qc.invalidateQueries(["fuel"]);
       setForm({ vehicle_id: "", date: "", liters: "", price: "", odometer: "", station: "" });
+      setIsAddOpen(false);
     }
   });
 
@@ -56,9 +59,10 @@ export default function FuelPage() {
     <div className="page">
       <SectionHeader
         title={t("fuel")}
-        subtitle="Управление заправками, импорт/экспорт CSV, быстрый ввод"
+        subtitle={t("fuelSubtitle")}
         actions={
           <>
+            <Button variant="secondary" onClick={() => setIsAddOpen(true)}>{t("openAddFuel")}</Button>
             <Button variant="secondary" onClick={exportCsv}>{t("exportCsv")}</Button>
             <label>
               <input
@@ -73,31 +77,9 @@ export default function FuelPage() {
         }
       />
 
-      <Card title={`${t("add")} ${t("fuel")}`}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px" }}>
-          <select
-            value={form.vehicle_id}
-            onChange={(e) => setForm({ ...form, vehicle_id: e.target.value })}
-          >
-            <option value="">Vehicle</option>
-            {vehicles.data?.map((v: any) => (
-              <option key={v.id} value={v.id}>{v.plate_number}</option>
-            ))}
-          </select>
-          <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
-          <Input placeholder="Liters" value={form.liters} onChange={(e) => setForm({ ...form, liters: e.target.value })} />
-          <Input placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-          <Input placeholder="Odometer" value={form.odometer} onChange={(e) => setForm({ ...form, odometer: e.target.value })} />
-          <Input placeholder="Station" value={form.station} onChange={(e) => setForm({ ...form, station: e.target.value })} />
-        </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
-          <Button onClick={() => create.mutate()}>{t("add")}</Button>
-        </div>
-      </Card>
-
-      <Card title={t("fuelEntries")} subtitle={`Avg liters: ${avgConsumption}`}>
+      <Card title={t("fuelEntries")} subtitle={t("avgLiters", { value: avgConsumption })}>
         <Table
-          headers={["Vehicle", "Date", "Liters", "Price", "Odometer", "Station", "Anomaly"]}
+          headers={[t("vehicle"), t("date"), t("liters"), t("price"), t("odometer"), t("station"), t("anomaly")]}
           rows={(fuel.data || []).map((f: any) => [
             f.vehicle_id,
             f.date,
@@ -110,6 +92,29 @@ export default function FuelPage() {
           zebra
         />
       </Card>
+
+      <Modal open={isAddOpen} title={t("addFuel")} onClose={() => setIsAddOpen(false)}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px" }}>
+          <select
+            value={form.vehicle_id}
+            onChange={(e) => setForm({ ...form, vehicle_id: e.target.value })}
+          >
+            <option value="">{t("vehicle")}</option>
+            {vehicles.data?.map((v: any) => (
+              <option key={v.id} value={v.id}>{v.plate_number}</option>
+            ))}
+          </select>
+          <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+          <Input placeholder={t("liters")} value={form.liters} onChange={(e) => setForm({ ...form, liters: e.target.value })} />
+          <Input placeholder={t("price")} value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+          <Input placeholder={t("odometer")} value={form.odometer} onChange={(e) => setForm({ ...form, odometer: e.target.value })} />
+          <Input placeholder={t("station")} value={form.station} onChange={(e) => setForm({ ...form, station: e.target.value })} />
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+            <Button variant="ghost" onClick={() => setIsAddOpen(false)}>{t("cancel")}</Button>
+            <Button onClick={() => create.mutate()}>{t("add")}</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

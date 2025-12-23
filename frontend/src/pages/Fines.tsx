@@ -7,6 +7,7 @@ import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { StatusBadge } from "../components/ui/StatusBadge";
+import { Modal } from "../components/ui/Modal";
 import styles from "./Fines.module.css";
 
 export default function FinesPage() {
@@ -16,6 +17,7 @@ export default function FinesPage() {
   const vehicles = useQuery({ queryKey: ["vehicles"], queryFn: async () => (await api.get("/vehicles")).data });
   const [form, setForm] = useState({ vehicle_id: "", amount: "", status: "unpaid", category: "traffic", payment_details: "", date: "" });
   const [fineEdits, setFineEdits] = useState<Record<number, { status: string; payment_details: string }>>({});
+  const [isAddOpen, setIsAddOpen] = useState(false);
   const today = new Date().toISOString().split("T")[0];
 
   const create = useMutation({
@@ -31,6 +33,7 @@ export default function FinesPage() {
     onSuccess: () => {
       qc.invalidateQueries(["fines"]);
       setForm({ vehicle_id: "", amount: "", status: "unpaid", category: "traffic", payment_details: "", date: "" });
+      setIsAddOpen(false);
     }
   });
 
@@ -63,50 +66,11 @@ export default function FinesPage() {
 
   return (
     <div className="page">
-      <SectionHeader title={t("fines")} subtitle={t("finesSubtitle")} />
-      <Card>
-        <div className={styles.formGrid}>
-          <select
-            value={form.vehicle_id}
-            onChange={(e) => setForm({ ...form, vehicle_id: e.target.value })}
-          >
-            <option value="">{t("vehicle")}</option>
-            {vehicles.data?.map((v: any) => (
-              <option key={v.id} value={v.id}>{v.plate_number}</option>
-            ))}
-          </select>
-          <select
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-          >
-            <option value="traffic">{t("fineCategoryTraffic")}</option>
-            <option value="parking">{t("fineCategoryParking")}</option>
-            <option value="other">{t("fineCategoryOther")}</option>
-          </select>
-          <Input
-            placeholder={t("amount")}
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.amount}
-            onChange={(e) => setForm({ ...form, amount: e.target.value })}
-          />
-          <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
-          <select
-            value={form.status}
-            onChange={(e) => setForm({ ...form, status: e.target.value })}
-          >
-            <option value="unpaid">{t("statusLabels.unpaid")}</option>
-            <option value="paid">{t("statusLabels.paid")}</option>
-          </select>
-          <Input
-            placeholder={t("paymentDetails")}
-            value={form.payment_details}
-            onChange={(e) => setForm({ ...form, payment_details: e.target.value })}
-          />
-          <Button onClick={() => create.mutate()}>{t("add")}</Button>
-        </div>
-      </Card>
+      <SectionHeader
+        title={t("fines")}
+        subtitle={t("finesSubtitle")}
+        actions={<Button variant="secondary" onClick={() => setIsAddOpen(true)}>{t("openAddFine")}</Button>}
+      />
       <Card>
         <ul className={styles.list}>
           {fines.data?.map((f: any) => {
@@ -157,6 +121,53 @@ export default function FinesPage() {
           })}
         </ul>
       </Card>
+
+      <Modal open={isAddOpen} title={t("addFine")} onClose={() => setIsAddOpen(false)}>
+        <div className={styles.formGrid}>
+          <select
+            value={form.vehicle_id}
+            onChange={(e) => setForm({ ...form, vehicle_id: e.target.value })}
+          >
+            <option value="">{t("vehicle")}</option>
+            {vehicles.data?.map((v: any) => (
+              <option key={v.id} value={v.id}>{v.plate_number}</option>
+            ))}
+          </select>
+          <select
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
+          >
+            <option value="traffic">{t("fineCategoryTraffic")}</option>
+            <option value="parking">{t("fineCategoryParking")}</option>
+            <option value="other">{t("fineCategoryOther")}</option>
+          </select>
+          <Input
+            placeholder={t("amount")}
+            type="number"
+            min="0"
+            step="0.01"
+            value={form.amount}
+            onChange={(e) => setForm({ ...form, amount: e.target.value })}
+          />
+          <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+          <select
+            value={form.status}
+            onChange={(e) => setForm({ ...form, status: e.target.value })}
+          >
+            <option value="unpaid">{t("statusLabels.unpaid")}</option>
+            <option value="paid">{t("statusLabels.paid")}</option>
+          </select>
+          <Input
+            placeholder={t("paymentDetails")}
+            value={form.payment_details}
+            onChange={(e) => setForm({ ...form, payment_details: e.target.value })}
+          />
+          <div className={styles.modalActions}>
+            <Button variant="ghost" onClick={() => setIsAddOpen(false)}>{t("cancel")}</Button>
+            <Button onClick={() => create.mutate()}>{t("add")}</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

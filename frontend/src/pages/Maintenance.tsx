@@ -7,6 +7,7 @@ import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { StatusBadge } from "../components/ui/StatusBadge";
+import { Modal } from "../components/ui/Modal";
 
 export default function MaintenancePage() {
   const { t } = useTranslation();
@@ -15,6 +16,7 @@ export default function MaintenancePage() {
   const alerts = useQuery({ queryKey: ["maintenance-alerts"], queryFn: async () => (await api.get("/maintenance/alerts")).data });
   const vehicles = useQuery({ queryKey: ["vehicles"], queryFn: async () => (await api.get("/vehicles")).data });
   const [form, setForm] = useState({ vehicle_id: "", description: "", due_date: "" });
+  const [isAddOpen, setIsAddOpen] = useState(false);
 
   const create = useMutation({
     mutationFn: async () =>
@@ -27,6 +29,7 @@ export default function MaintenancePage() {
       qc.invalidateQueries(["schedules"]);
       qc.invalidateQueries(["maintenance-alerts"]);
       setForm({ vehicle_id: "", description: "", due_date: "" });
+      setIsAddOpen(false);
     }
   });
 
@@ -34,24 +37,9 @@ export default function MaintenancePage() {
     <div className="page">
       <SectionHeader
         title={t("maintenance")}
-        subtitle={`Alerts: ${alerts.data?.length || 0}`}
+        subtitle={t("maintenanceSubtitle", { count: alerts.data?.length || 0 })}
+        actions={<Button variant="secondary" onClick={() => setIsAddOpen(true)}>{t("openAddSchedule")}</Button>}
       />
-      <Card title={`${t("add")} schedule`}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", alignItems: "end" }}>
-          <select
-            value={form.vehicle_id}
-            onChange={(e) => setForm({ ...form, vehicle_id: e.target.value })}
-          >
-            <option value="">Vehicle</option>
-            {vehicles.data?.map((v: any) => (
-              <option key={v.id} value={v.id}>{v.plate_number}</option>
-            ))}
-          </select>
-          <Input placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-          <Input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
-          <Button onClick={() => create.mutate()}>{t("add")}</Button>
-        </div>
-      </Card>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
         {schedules.data?.map((s: any) => (
           <Card key={s.id}>
@@ -66,6 +54,26 @@ export default function MaintenancePage() {
           </Card>
         ))}
       </div>
+
+      <Modal open={isAddOpen} title={t("addSchedule")} onClose={() => setIsAddOpen(false)}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", alignItems: "end" }}>
+          <select
+            value={form.vehicle_id}
+            onChange={(e) => setForm({ ...form, vehicle_id: e.target.value })}
+          >
+            <option value="">{t("vehicle")}</option>
+            {vehicles.data?.map((v: any) => (
+              <option key={v.id} value={v.id}>{v.plate_number}</option>
+            ))}
+          </select>
+          <Input placeholder={t("description")} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <Input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+            <Button variant="ghost" onClick={() => setIsAddOpen(false)}>{t("cancel")}</Button>
+            <Button onClick={() => create.mutate()}>{t("add")}</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

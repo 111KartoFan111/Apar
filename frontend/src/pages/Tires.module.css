@@ -24,6 +24,19 @@
   align-items: end;
 }
 
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.modalActions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
 .field {
   display: flex;
   flex-direction: column;

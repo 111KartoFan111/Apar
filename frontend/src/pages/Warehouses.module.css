@@ -35,6 +35,19 @@
   font-size: 13px;
 }
 
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-3);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
 .list {
   list-style: none;
   padding: 0;

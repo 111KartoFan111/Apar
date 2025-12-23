@@ -6,6 +6,7 @@ import { SectionHeader } from "../components/SectionHeader";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
+import { Modal } from "../components/ui/Modal";
 import { Table } from "../components/ui/Table";
 import { StatusBadge } from "../components/ui/StatusBadge";
 import styles from "./Tires.module.css";
@@ -21,6 +22,8 @@ export default function TiresPage() {
   const [form, setForm] = useState({ serial: "", brand: "", tread_depth: "", mileage: "", status: "in_stock" });
   const [updateForm, setUpdateForm] = useState({ tire_id: "", status: "", tread_depth: "", mileage: "" });
   const [assignForm, setAssignForm] = useState({ tire_id: "", vehicle_id: "", position: "", notes: "", assigned_date: "" });
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [isAssignOpen, setIsAssignOpen] = useState(false);
   const [serviceForm, setServiceForm] = useState({
     tire_id: "",
     service_type: "inspection",
@@ -54,6 +57,7 @@ export default function TiresPage() {
       }),
     onSuccess: () => {
       qc.invalidateQueries(["tires"]);
+      setIsUpdateOpen(false);
     }
   });
 
@@ -70,6 +74,7 @@ export default function TiresPage() {
       qc.invalidateQueries(["tires"]);
       qc.invalidateQueries(["tire-assignments"]);
       setAssignForm({ tire_id: "", vehicle_id: "", position: "", notes: "", assigned_date: "" });
+      setIsAssignOpen(false);
     }
   });
 
@@ -193,88 +198,10 @@ export default function TiresPage() {
             </div>
           </Card>
 
-          <Card title={t("updateTire")}>
-            <div className={styles.formStack}>
-              <div className={styles.field}>
-                <span className={styles.fieldLabel}>{t("tire")}</span>
-                <select
-                  value={updateForm.tire_id}
-                  onChange={(e) => handleUpdateSelect(e.target.value)}
-                >
-                  <option value="">{t("tire")}</option>
-                  {tires.data?.map((tire: any) => (
-                    <option key={tire.id} value={tire.id}>{tire.serial}</option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.formRow}>
-                <div className={styles.field}>
-                  <span className={styles.fieldLabel}>{t("status")}</span>
-                  <select
-                    value={updateForm.status}
-                    onChange={(e) => setUpdateForm({ ...updateForm, status: e.target.value })}
-                  >
-                    <option value="in_stock">{t("statusLabels.in_stock")}</option>
-                    <option value="installed">{t("statusLabels.installed")}</option>
-                    <option value="service">{t("statusLabels.service")}</option>
-                    <option value="retired">{t("statusLabels.retired")}</option>
-                  </select>
-                </div>
-                <Input
-                  label={t("tireTread")}
-                  type="number"
-                  min="0"
-                  step="0.1"
-                  value={updateForm.tread_depth}
-                  onChange={(e) => setUpdateForm({ ...updateForm, tread_depth: e.target.value })}
-                />
-                <Input
-                  label={t("tireMileage")}
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={updateForm.mileage}
-                  onChange={(e) => setUpdateForm({ ...updateForm, mileage: e.target.value })}
-                />
-              </div>
-              <Button disabled={!canUpdate} onClick={() => updateTire.mutate()}>{t("save")}</Button>
-            </div>
-          </Card>
-
-          <Card title={t("assignTire")}>
-            <div className={styles.formStack}>
-              <div className={styles.formRow}>
-                <div className={styles.field}>
-                  <span className={styles.fieldLabel}>{t("tire")}</span>
-                  <select
-                    value={assignForm.tire_id}
-                    onChange={(e) => setAssignForm({ ...assignForm, tire_id: e.target.value })}
-                  >
-                    <option value="">{t("tire")}</option>
-                    {tires.data?.map((tire: any) => (
-                      <option key={tire.id} value={tire.id}>{tire.serial}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className={styles.field}>
-                  <span className={styles.fieldLabel}>{t("vehicle")}</span>
-                  <select
-                    value={assignForm.vehicle_id}
-                    onChange={(e) => setAssignForm({ ...assignForm, vehicle_id: e.target.value })}
-                  >
-                    <option value="">{t("vehicle")}</option>
-                    {vehicles.data?.map((v: any) => (
-                      <option key={v.id} value={v.id}>{v.plate_number}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className={styles.formRow}>
-                <Input label={t("tirePosition")} value={assignForm.position} onChange={(e) => setAssignForm({ ...assignForm, position: e.target.value })} />
-                <Input label={t("tireAssignedDate")} type="date" value={assignForm.assigned_date} onChange={(e) => setAssignForm({ ...assignForm, assigned_date: e.target.value })} />
-                <Input label={t("notes")} value={assignForm.notes} onChange={(e) => setAssignForm({ ...assignForm, notes: e.target.value })} />
-              </div>
-              <Button disabled={!canAssign} onClick={() => assign.mutate()}>{t("add")}</Button>
+          <Card title={t("tireActions")}>
+            <div className={styles.actionRow}>
+              <Button variant="secondary" onClick={() => setIsUpdateOpen(true)}>{t("openUpdateTire")}</Button>
+              <Button variant="secondary" onClick={() => setIsAssignOpen(true)}>{t("openAssignTire")}</Button>
             </div>
           </Card>
         </div>
@@ -367,6 +294,97 @@ export default function TiresPage() {
           </Card>
         </div>
       </div>
+
+      <Modal open={isUpdateOpen} title={t("updateTire")} onClose={() => setIsUpdateOpen(false)}>
+        <div className={styles.formStack}>
+          <div className={styles.field}>
+            <span className={styles.fieldLabel}>{t("tire")}</span>
+            <select
+              value={updateForm.tire_id}
+              onChange={(e) => handleUpdateSelect(e.target.value)}
+            >
+              <option value="">{t("tire")}</option>
+              {tires.data?.map((tire: any) => (
+                <option key={tire.id} value={tire.id}>{tire.serial}</option>
+              ))}
+            </select>
+          </div>
+          <div className={styles.formRow}>
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>{t("status")}</span>
+              <select
+                value={updateForm.status}
+                onChange={(e) => setUpdateForm({ ...updateForm, status: e.target.value })}
+              >
+                <option value="in_stock">{t("statusLabels.in_stock")}</option>
+                <option value="installed">{t("statusLabels.installed")}</option>
+                <option value="service">{t("statusLabels.service")}</option>
+                <option value="retired">{t("statusLabels.retired")}</option>
+              </select>
+            </div>
+            <Input
+              label={t("tireTread")}
+              type="number"
+              min="0"
+              step="0.1"
+              value={updateForm.tread_depth}
+              onChange={(e) => setUpdateForm({ ...updateForm, tread_depth: e.target.value })}
+            />
+            <Input
+              label={t("tireMileage")}
+              type="number"
+              min="0"
+              step="1"
+              value={updateForm.mileage}
+              onChange={(e) => setUpdateForm({ ...updateForm, mileage: e.target.value })}
+            />
+          </div>
+          <div className={styles.modalActions}>
+            <Button variant="ghost" onClick={() => setIsUpdateOpen(false)}>{t("cancel")}</Button>
+            <Button disabled={!canUpdate} onClick={() => updateTire.mutate()}>{t("save")}</Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal open={isAssignOpen} title={t("assignTire")} onClose={() => setIsAssignOpen(false)}>
+        <div className={styles.formStack}>
+          <div className={styles.formRow}>
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>{t("tire")}</span>
+              <select
+                value={assignForm.tire_id}
+                onChange={(e) => setAssignForm({ ...assignForm, tire_id: e.target.value })}
+              >
+                <option value="">{t("tire")}</option>
+                {tires.data?.map((tire: any) => (
+                  <option key={tire.id} value={tire.id}>{tire.serial}</option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>{t("vehicle")}</span>
+              <select
+                value={assignForm.vehicle_id}
+                onChange={(e) => setAssignForm({ ...assignForm, vehicle_id: e.target.value })}
+              >
+                <option value="">{t("vehicle")}</option>
+                {vehicles.data?.map((v: any) => (
+                  <option key={v.id} value={v.id}>{v.plate_number}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className={styles.formRow}>
+            <Input label={t("tirePosition")} value={assignForm.position} onChange={(e) => setAssignForm({ ...assignForm, position: e.target.value })} />
+            <Input label={t("tireAssignedDate")} type="date" value={assignForm.assigned_date} onChange={(e) => setAssignForm({ ...assignForm, assigned_date: e.target.value })} />
+            <Input label={t("notes")} value={assignForm.notes} onChange={(e) => setAssignForm({ ...assignForm, notes: e.target.value })} />
+          </div>
+          <div className={styles.modalActions}>
+            <Button variant="ghost" onClick={() => setIsAssignOpen(false)}>{t("cancel")}</Button>
+            <Button disabled={!canAssign} onClick={() => assign.mutate()}>{t("add")}</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

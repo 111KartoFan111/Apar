@@ -6,6 +6,7 @@ import { SectionHeader } from "../components/SectionHeader";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
+import { Modal } from "../components/ui/Modal";
 import { Table } from "../components/ui/Table";
 import { StatusBadge } from "../components/ui/StatusBadge";
 import styles from "./Warehouses.module.css";
@@ -19,6 +20,9 @@ export default function WarehousesPage() {
   const movements = useQuery({ queryKey: ["stock-movements"], queryFn: async () => (await api.get("/warehouses/movements")).data });
   const [whForm, setWhForm] = useState({ name: "", type: "stationary" });
   const [partForm, setPartForm] = useState({ sku: "", name: "", cost: "" });
+  const [isWarehouseOpen, setIsWarehouseOpen] = useState(false);
+  const [isPartOpen, setIsPartOpen] = useState(false);
+  const [isMovementOpen, setIsMovementOpen] = useState(false);
   const [movementForm, setMovementForm] = useState({
     warehouse_id: "",
     part_id: "",
@@ -32,6 +36,7 @@ export default function WarehousesPage() {
     onSuccess: () => {
       qc.invalidateQueries(["warehouses"]);
       setWhForm({ name: "", type: "stationary" });
+      setIsWarehouseOpen(false);
     }
   });
 
@@ -40,6 +45,7 @@ export default function WarehousesPage() {
     onSuccess: () => {
       qc.invalidateQueries(["parts"]);
       setPartForm({ sku: "", name: "", cost: "" });
+      setIsPartOpen(false);
     }
   });
 
@@ -56,6 +62,7 @@ export default function WarehousesPage() {
       qc.invalidateQueries(["stocks"]);
       qc.invalidateQueries(["stock-movements"]);
       setMovementForm((current) => ({ ...current, quantity: "", reference: "" }));
+      setIsMovementOpen(false);
     }
   });
 
@@ -129,19 +136,8 @@ export default function WarehousesPage() {
       <div className={styles.grid}>
         <div className={styles.column}>
           <Card title={t("warehouses")}>
-            <div className={styles.formStack}>
-              <Input label={t("warehouseName")} value={whForm.name} onChange={(e) => setWhForm({ ...whForm, name: e.target.value })} />
-              <div className={styles.field}>
-                <span className={styles.fieldLabel}>{t("warehouseType")}</span>
-                <select
-                  value={whForm.type}
-                  onChange={(e) => setWhForm({ ...whForm, type: e.target.value })}
-                >
-                  <option value="stationary">{t("warehouseTypeStationary")}</option>
-                  <option value="mobile">{t("warehouseTypeMobile")}</option>
-                </select>
-              </div>
-              <Button onClick={() => createWh.mutate()}>{t("add")}</Button>
+            <div className={styles.cardActions}>
+              <Button variant="secondary" onClick={() => setIsWarehouseOpen(true)}>{t("openAddWarehouse")}</Button>
             </div>
             {warehouses.data?.length ? (
               <ul className={styles.list}>
@@ -160,18 +156,8 @@ export default function WarehousesPage() {
           </Card>
 
           <Card title={t("parts")}>
-            <div className={styles.formStack}>
-              <Input label={t("sku")} value={partForm.sku} onChange={(e) => setPartForm({ ...partForm, sku: e.target.value })} />
-              <Input label={t("partName")} value={partForm.name} onChange={(e) => setPartForm({ ...partForm, name: e.target.value })} />
-              <Input
-                label={t("cost")}
-                type="number"
-                min="0"
-                step="0.01"
-                value={partForm.cost}
-                onChange={(e) => setPartForm({ ...partForm, cost: e.target.value })}
-              />
-              <Button onClick={() => createPart.mutate()}>{t("add")}</Button>
+            <div className={styles.cardActions}>
+              <Button variant="secondary" onClick={() => setIsPartOpen(true)}>{t("openAddPart")}</Button>
             </div>
             {parts.data?.length ? (
               <div className={styles.scroll}>
@@ -190,58 +176,9 @@ export default function WarehousesPage() {
 
         <div className={styles.column}>
           <Card title={t("stockMovement")} subtitle={t("stockMovementHint")}>
-            <div className={styles.formRow}>
-              <div className={styles.field}>
-                <span className={styles.fieldLabel}>{t("warehouse")}</span>
-                <select
-                  value={movementForm.warehouse_id}
-                  onChange={(e) => setMovementForm({ ...movementForm, warehouse_id: e.target.value })}
-                >
-                  <option value="">{t("warehouse")}</option>
-                  {warehouses.data?.map((w: any) => (
-                    <option key={w.id} value={w.id}>{w.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.field}>
-                <span className={styles.fieldLabel}>{t("part")}</span>
-                <select
-                  value={movementForm.part_id}
-                  onChange={(e) => setMovementForm({ ...movementForm, part_id: e.target.value })}
-                >
-                  <option value="">{t("part")}</option>
-                  {parts.data?.map((p: any) => (
-                    <option key={p.id} value={p.id}>{p.sku} - {p.name}</option>
-                  ))}
-                </select>
-              </div>
+            <div className={styles.cardActions}>
+              <Button variant="secondary" onClick={() => setIsMovementOpen(true)}>{t("openMovement")}</Button>
             </div>
-            <div className={styles.formRow}>
-              <Input
-                label={t("quantity")}
-                type="number"
-                min="0"
-                step="0.01"
-                value={movementForm.quantity}
-                onChange={(e) => setMovementForm({ ...movementForm, quantity: e.target.value })}
-              />
-              <div className={styles.field}>
-                <span className={styles.fieldLabel}>{t("movementType")}</span>
-                <select
-                  value={movementForm.movement_type}
-                  onChange={(e) => setMovementForm({ ...movementForm, movement_type: e.target.value })}
-                >
-                  <option value="in">{t("movementIn")}</option>
-                  <option value="out">{t("movementOut")}</option>
-                </select>
-              </div>
-              <Input
-                label={t("reference")}
-                value={movementForm.reference}
-                onChange={(e) => setMovementForm({ ...movementForm, reference: e.target.value })}
-              />
-            </div>
-            <Button onClick={() => moveStock.mutate()} disabled={!canMove}>{t("applyMovement")}</Button>
           </Card>
 
           <Card title={t("stockLevels")}>
@@ -265,6 +202,105 @@ export default function WarehousesPage() {
           </Card>
         </div>
       </div>
+
+      <Modal open={isWarehouseOpen} title={t("addWarehouse")} onClose={() => setIsWarehouseOpen(false)}>
+        <div className={styles.formStack}>
+          <Input label={t("warehouseName")} value={whForm.name} onChange={(e) => setWhForm({ ...whForm, name: e.target.value })} />
+          <div className={styles.field}>
+            <span className={styles.fieldLabel}>{t("warehouseType")}</span>
+            <select
+              value={whForm.type}
+              onChange={(e) => setWhForm({ ...whForm, type: e.target.value })}
+            >
+              <option value="stationary">{t("warehouseTypeStationary")}</option>
+              <option value="mobile">{t("warehouseTypeMobile")}</option>
+            </select>
+          </div>
+          <div className={styles.modalActions}>
+            <Button variant="ghost" onClick={() => setIsWarehouseOpen(false)}>{t("cancel")}</Button>
+            <Button onClick={() => createWh.mutate()}>{t("add")}</Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal open={isPartOpen} title={t("addPart")} onClose={() => setIsPartOpen(false)}>
+        <div className={styles.formStack}>
+          <Input label={t("sku")} value={partForm.sku} onChange={(e) => setPartForm({ ...partForm, sku: e.target.value })} />
+          <Input label={t("partName")} value={partForm.name} onChange={(e) => setPartForm({ ...partForm, name: e.target.value })} />
+          <Input
+            label={t("cost")}
+            type="number"
+            min="0"
+            step="0.01"
+            value={partForm.cost}
+            onChange={(e) => setPartForm({ ...partForm, cost: e.target.value })}
+          />
+          <div className={styles.modalActions}>
+            <Button variant="ghost" onClick={() => setIsPartOpen(false)}>{t("cancel")}</Button>
+            <Button onClick={() => createPart.mutate()}>{t("add")}</Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal open={isMovementOpen} title={t("stockMovement")} onClose={() => setIsMovementOpen(false)}>
+        <div className={styles.formStack}>
+          <div className={styles.formRow}>
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>{t("warehouse")}</span>
+              <select
+                value={movementForm.warehouse_id}
+                onChange={(e) => setMovementForm({ ...movementForm, warehouse_id: e.target.value })}
+              >
+                <option value="">{t("warehouse")}</option>
+                {warehouses.data?.map((w: any) => (
+                  <option key={w.id} value={w.id}>{w.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>{t("part")}</span>
+              <select
+                value={movementForm.part_id}
+                onChange={(e) => setMovementForm({ ...movementForm, part_id: e.target.value })}
+              >
+                <option value="">{t("part")}</option>
+                {parts.data?.map((p: any) => (
+                  <option key={p.id} value={p.id}>{p.sku} - {p.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className={styles.formRow}>
+            <Input
+              label={t("quantity")}
+              type="number"
+              min="0"
+              step="0.01"
+              value={movementForm.quantity}
+              onChange={(e) => setMovementForm({ ...movementForm, quantity: e.target.value })}
+            />
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>{t("movementType")}</span>
+              <select
+                value={movementForm.movement_type}
+                onChange={(e) => setMovementForm({ ...movementForm, movement_type: e.target.value })}
+              >
+                <option value="in">{t("movementIn")}</option>
+                <option value="out">{t("movementOut")}</option>
+              </select>
+            </div>
+            <Input
+              label={t("reference")}
+              value={movementForm.reference}
+              onChange={(e) => setMovementForm({ ...movementForm, reference: e.target.value })}
+            />
+          </div>
+          <div className={styles.modalActions}>
+            <Button variant="ghost" onClick={() => setIsMovementOpen(false)}>{t("cancel")}</Button>
+            <Button onClick={() => moveStock.mutate()} disabled={!canMove}>{t("applyMovement")}</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
