@@ -7,9 +7,9 @@ from app.auth import get_password_hash
 def seed_demo_data(db: Session):
     if db.query(models.User).count() == 0:
         admin = models.User(
-            username="admin",
-            full_name="Admin User",
-            hashed_password=get_password_hash("admin123"),
+            username="Damir",
+            full_name="Daukaraev Damir",
+            hashed_password=get_password_hash("damird4321"),
             role="admin",
         )
         db.add(admin)
