@@ -1,55 +1,73 @@
 Apar Intelligent Transportation System
 ======================================
 
-Monorepo for a fleet management diploma project with FastAPI + PostgreSQL backend, React + Vite frontend, and Dockerized infra.
+О проекте
+Проект для управления автопарком и операциями перевозок: мониторинг состояния техники, учет расходов, обслуживание, складские операции, отчетность.
 
-Features
-- Fleet dashboard: vehicles, statuses, costs, health, fuel metrics, maintenance alerts.
-- Financial analytics: fuel, repairs, parts, fines with CSV export/import.
-- Operations: waybills, inspections with attachments, maintenance schedules and work orders.
-- Warehouses & parts: stationary/mobile warehouses, stock movements, orders, CSV import/export.
-- Fines, tires (inventory, assignments, tread alerts), fuel anomaly flags.
-- Reports with custom templates and CSV export, AI helpers (mocked if no GEMINI_API_KEY).
-- Auth via JWT, seeded admin (admin/admin123), i18n RU/KZ frontend.
+Основные характеристики
+- Панель автопарка: статусы, расходы, пробеги, здоровье, топливо, напоминания по ТО.
+- Финансовая аналитика: топливо, ремонты, запчасти, штрафы; импорт/экспорт CSV.
+- Операционные процессы: путевые листы, осмотры с вложениями, регламенты ТО, наряды.
+- Склады и запчасти: стационарные/мобильные склады, перемещения, заказы, CSV.
+- Шины и штрафы: учет, назначения, износ/остаток, алерты.
+- Отчеты с шаблонами и выгрузкой в CSV.
+- ИИ-помощники: шаблоны отчетов, нормализация маршрутов, советы по ТО.
+- Аутентификация JWT, сиды с админом по умолчанию.
+- Локализация интерфейса RU/KZ.
 
-Tech Stack
+Технологический стек
 - Frontend: React 18, TypeScript, Vite, React Router, TanStack Query, TailwindCSS, i18next.
-- Backend: FastAPI, SQLAlchemy, Pydantic, JWT auth, plain SQL migrations (no Alembic).
-- DB: PostgreSQL. Tests run on SQLite for speed.
-- Infra: Docker + docker-compose, .env support.
+- Backend: FastAPI, SQLAlchemy, Pydantic, JWT.
+- БД: PostgreSQL (тесты на SQLite).
+- Инфраструктура: Docker, docker-compose, .env конфигурация.
 
-Getting Started
-1) Copy env and adjust as needed:
-   ```
-   cp .env.example .env
-   ```
-2) Run with Docker:
+Быстрый старт
+1. Проверьте настройки в `.env` (база данных, JWT, порты).
+2. Запустите сервисы:
    ```
    docker-compose up --build
    ```
-   - Backend: http://localhost:8000
-   - Frontend: http://localhost:5173
-3) Seeded credentials: username `admin`, password `admin123`.
+3. Откройте backend: http://localhost:7080
+4. Откройте frontend: http://localhost:4173
+5. Демо-доступ (если `SEED_DEMO=true`): логин `Damir`, пароль `damird4321`.
 
-Local Development (optional)
-- Backend: `cd backend && uvicorn app.main:app --reload`
-- Frontend: `cd frontend && npm install && npm run dev`
+Локальная разработка
+Backend:
+```
+cd backend
+uvicorn app.main:app --reload
+```
 
-Migrations
-- Plain SQL files in `backend/db/migrations/*.sql`.
-- `app.migrations.apply_migrations()` creates `schema_migrations` and applies files idempotently on startup.
+Frontend:
+```
+cd frontend
+npm install
+npm run dev
+```
 
-CSV Flows
-- Import/export vehicles, fuel entries, parts via corresponding endpoints/pages.
-- Backend returns validation errors with row numbers for bad rows.
+Для фронта укажите `VITE_API_URL`, если backend на другом хосте/порту.
 
-AI Integration
-- Endpoints under `/ai/*` use GEMINI_API_KEY from env; mock responses are returned when the key is absent.
+ИИ и ассистенты
+- Эндпойнты: `/ai/report-builder`, `/ai/waybill-normalize`, `/ai/maintenance-advice` (требуют JWT).
+- Без `GEMINI_API_KEY` возвращаются детерминированные мок-ответы.
+- С ключом ответы помечаются `llm=gemini` (интеграция подготовлена, вызов провайдера нужно подключить).
 
-Testing
-- Backend tests (pytest) use SQLite: `DATABASE_URL=sqlite:///./test.db pytest`.
+Переменные окружения (основные)
+- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_HOST`, `POSTGRES_PORT` или единый `DATABASE_URL`.
+- `BACKEND_PORT`, `FRONTEND_PORT` для портов Docker.
+- `JWT_SECRET`, `JWT_ALGORITHM`, `JWT_EXPIRE_MINUTES`.
+- `GEMINI_API_KEY` для ИИ-модулей.
+- `SEED_DEMO` для включения/отключения демо-данных.
 
-Repository Layout
-- `backend/` FastAPI app, migrations, seeds, tests.
-- `frontend/` Vite React app with i18n, Tailwind UI.
-- `docker-compose.yml` services for db, backend, frontend.
+Миграции
+- SQL-файлы в `backend/db/migrations/*.sql`.
+- Применяются при старте backend; список фиксируется в `schema_migrations`.
+
+Тестирование
+- Backend тесты: `pytest` (SQLite), тестовые креды `admin/admin123`.
+
+Структура репозитория
+- `backend/` сервер, миграции, сиды, тесты.
+- `frontend/` клиентское приложение.
+- `tests/` тесты backend.
+- `docker-compose.yml` сервисы базы данных, backend, frontend.
